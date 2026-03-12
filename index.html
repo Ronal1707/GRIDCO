@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GRIDCO — Soluciones de Marketing Digital</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500&family=Space+Mono:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #03050F;
+    --white: #F0F2FF;
+    --cream: #E0E4FF;
+    --gold: #002DFF;
+    --gold-light: #3355FF;
+    --rust: #00AAFF;
+    --muted: #6068A0;
+    --grid-line: rgba(0,45,255,0.10);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    position: fixed;
+    width: 12px; height: 12px;
+    background: var(--gold);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s, width 0.3s, height 0.3s, background 0.3s;
+    mix-blend-mode: difference;
+  }
+  .cursor-ring {
+    position: fixed;
+    width: 40px; height: 40px;
+    border: 1px solid var(--gold);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: transform 0.15s ease, width 0.3s, height 0.3s;
+    opacity: 0.5;
+  }
+  .cursor.hover { width: 6px; height: 6px; }
+  .cursor-ring.hover { width: 60px; height: 60px; opacity: 0.3; }
+
+  /* Background grid */
+  .bg-grid {
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 80px 80px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Noise overlay */
+  .noise {
+    position: fixed;
+    inset: 0;
+    opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  section, nav, footer { position: relative; z-index: 2; }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    padding: 24px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100;
+    mix-blend-mode: normal;
+  }
+  nav::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 60px; right: 60px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    opacity: 0.3;
+  }
+
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 8px;
+    color: var(--gold);
+    text-decoration: none;
+  }
+  .nav-logo span { color: var(--white); opacity: 0.5; }
+
+  .nav-links {
+    display: flex;
+    gap: 40px;
+    list-style: none;
+  }
+  .nav-links a {
+    color: var(--white);
+    text-decoration: none;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    opacity: 0.6;
+    transition: opacity 0.3s, color 0.3s;
+  }
+  .nav-links a:hover { opacity: 1; color: var(--gold); }
+
+  .nav-cta {
+    background: transparent;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 10px 24px;
+    cursor: none;
+    transition: background 0.3s, color 0.3s;
+    text-decoration: none;
+  }
+  .nav-cta:hover { background: var(--gold); color: var(--black); }
+
+  /* ─── HERO ─── */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 140px 60px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.3s forwards;
+  }
+
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(80px, 12vw, 180px);
+    line-height: 0.9;
+    letter-spacing: -2px;
+    color: var(--white);
+    max-width: 900px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.5s forwards;
+  }
+  .hero-title .accent { color: var(--gold); font-family: 'DM Serif Display', serif; font-style: italic; }
+
+  .hero-sub {
+    max-width: 480px;
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--muted);
+    margin-top: 40px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.7s forwards;
+  }
+  .hero-sub strong { color: var(--white); font-weight: 400; }
+
+  .hero-actions {
+    display: flex;
+    gap: 20px;
+    margin-top: 52px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.9s forwards;
+  }
+
+  .btn-primary {
+    background: var(--gold);
+    color: var(--black);
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 18px 44px;
+    text-decoration: none;
+    cursor: none;
+    transition: background 0.3s, transform 0.2s;
+    display: inline-block;
+  }
+  .btn-primary:hover { background: var(--gold-light); transform: translateY(-2px); }
+
+  .btn-ghost {
+    border: 1px solid rgba(245,240,232,0.2);
+    color: var(--white);
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 18px 44px;
+    text-decoration: none;
+    cursor: none;
+    transition: border-color 0.3s, color 0.3s;
+    display: inline-block;
+  }
+  .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* Decorative servilleta element */
+  .hero-deco {
+    position: absolute;
+    right: 60px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 420px;
+    opacity: 0;
+    animation: fadeIn 1.2s 1.1s forwards;
+  }
+
+  .servilleta {
+    width: 380px;
+    height: 440px;
+    background: rgba(245,240,232,0.03);
+    border: 1px solid rgba(0,45,255,0.2);
+    transform: rotate(3deg);
+    position: relative;
+    padding: 32px;
+    box-shadow: 20px 20px 60px rgba(0,0,0,0.5);
+  }
+  .servilleta::before {
+    content: '';
+    position: absolute;
+    inset: 8px;
+    border: 1px dashed rgba(0,45,255,0.1);
+  }
+  .sketch-line {
+    height: 1px;
+    background: rgba(0,45,255,0.25);
+    margin-bottom: 20px;
+    transform-origin: left;
+  }
+  .sketch-circle {
+    width: 70px; height: 70px;
+    border: 1px solid rgba(0,45,255,0.3);
+    border-radius: 50%;
+    margin: 20px auto;
+    position: relative;
+  }
+  .sketch-circle::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    width: 30px; height: 30px;
+    border: 1px solid rgba(0,45,255,0.4);
+    border-radius: 50%;
+  }
+  .sketch-box {
+    width: 100%; height: 50px;
+    border: 1px solid rgba(0,45,255,0.2);
+    margin-bottom: 12px;
+  }
+  .sketch-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    color: var(--gold);
+    opacity: 0.5;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .servilleta-tag {
+    position: absolute;
+    bottom: -16px;
+    right: 20px;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    color: var(--gold);
+    letter-spacing: 2px;
+    opacity: 0.6;
+    transform: rotate(-2deg);
+  }
+
+  /* Hero scroll indicator */
+  .scroll-hint {
+    position: absolute;
+    bottom: 40px;
+    left: 60px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--muted);
+    text-transform: uppercase;
+    opacity: 0;
+    animation: fadeIn 1s 1.5s forwards;
+  }
+  .scroll-line {
+    width: 60px;
+    height: 1px;
+    background: var(--gold);
+    opacity: 0.4;
+    animation: expandLine 1.5s 1.8s ease forwards;
+    transform-origin: left;
+    transform: scaleX(0);
+  }
+
+  /* ─── MARQUEE ─── */
+  .marquee-wrap {
+    border-top: 1px solid rgba(0,45,255,0.15);
+    border-bottom: 1px solid rgba(0,45,255,0.15);
+    padding: 20px 0;
+    overflow: hidden;
+    background: rgba(0,45,255,0.04);
+  }
+  .marquee-track {
+    display: flex;
+    gap: 0;
+    animation: marquee 25s linear infinite;
+    white-space: nowrap;
+  }
+  .marquee-item {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 14px;
+    letter-spacing: 6px;
+    color: var(--gold);
+    opacity: 0.5;
+    padding: 0 40px;
+    flex-shrink: 0;
+  }
+  .marquee-dot {
+    color: var(--rust);
+    opacity: 0.6;
+  }
+
+  /* ─── MANIFIESTO ─── */
+  #manifesto {
+    padding: 140px 60px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 100px;
+    align-items: center;
+  }
+
+  .manifesto-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 40px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .manifesto-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--gold);
+    opacity: 0.3;
+  }
+
+  .manifesto-title {
+    font-family: 'DM Serif Display', serif;
+    font-style: italic;
+    font-size: clamp(36px, 4vw, 58px);
+    line-height: 1.2;
+    color: var(--white);
+    margin-bottom: 32px;
+  }
+  .manifesto-title strong {
+    font-style: normal;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2em;
+    color: var(--gold);
+    letter-spacing: 2px;
+  }
+
+  .manifesto-text {
+    font-size: 15px;
+    line-height: 1.9;
+    color: var(--muted);
+  }
+  .manifesto-text p + p { margin-top: 20px; }
+  .manifesto-text em { color: var(--white); font-style: normal; }
+
+  .manifesto-visual {
+    position: relative;
+    height: 500px;
+  }
+  .mani-card {
+    position: absolute;
+    background: rgba(245,240,232,0.03);
+    border: 1px solid rgba(0,45,255,0.15);
+    padding: 32px;
+  }
+  .mani-card:nth-child(1) { top: 0; left: 0; width: 260px; height: 300px; }
+  .mani-card:nth-child(2) { bottom: 0; right: 0; width: 220px; height: 260px; background: rgba(0,45,255,0.05); }
+  .mani-card:nth-child(3) { top: 120px; right: 40px; width: 160px; height: 160px; border-color: rgba(184,75,42,0.3); }
+  .mani-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 80px;
+    color: var(--gold);
+    opacity: 0.1;
+    line-height: 1;
+  }
+  .mani-stat {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    color: var(--white);
+    line-height: 1;
+  }
+  .mani-stat-label {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-top: 8px;
+  }
+  .mani-icon {
+    font-size: 32px;
+    margin-bottom: 16px;
+  }
+  .mani-card-text {
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+
+  /* ─── SERVICIOS ─── */
+  #servicios {
+    padding: 140px 60px;
+    background: linear-gradient(180deg, transparent, rgba(0,45,255,0.03), transparent);
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 80px;
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(48px, 7vw, 100px);
+    line-height: 0.9;
+    letter-spacing: -1px;
+  }
+  .section-title .line2 { color: var(--gold); }
+
+  .section-desc {
+    max-width: 320px;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--muted);
+    text-align: right;
+  }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    background: rgba(0,45,255,0.1);
+    border: 1px solid rgba(0,45,255,0.1);
+  }
+
+  .service-card {
+    background: var(--black);
+    padding: 48px 40px;
+    transition: background 0.4s;
+    position: relative;
+    overflow: hidden;
+  }
+  .service-card::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--gold);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s;
+  }
+  .service-card:hover { background: rgba(0,45,255,0.04); }
+  .service-card:hover::before { transform: scaleX(1); }
+
+  .service-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--gold);
+    opacity: 0.4;
+    letter-spacing: 2px;
+    margin-bottom: 32px;
+  }
+  .service-icon { font-size: 28px; margin-bottom: 20px; }
+  .service-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 24px;
+    color: var(--white);
+    margin-bottom: 16px;
+    line-height: 1.2;
+  }
+  .service-desc {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--muted);
+    margin-bottom: 24px;
+  }
+  .service-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .tag {
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border: 1px solid rgba(0,45,255,0.2);
+    color: var(--gold);
+    opacity: 0.7;
+  }
+
+  /* ─── PROCESO ─── */
+  #proceso {
+    padding: 140px 60px;
+  }
+
+  .process-steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    margin-top: 80px;
+    position: relative;
+  }
+  .process-steps::before {
+    content: '';
+    position: absolute;
+    top: 28px; left: 10%; right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    opacity: 0.2;
+  }
+
+  .step {
+    padding: 40px 32px;
+    position: relative;
+  }
+  .step-num {
+    width: 56px; height: 56px;
+    border: 1px solid var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    color: var(--gold);
+    margin-bottom: 32px;
+    position: relative;
+    background: var(--black);
+  }
+  .step-num::after {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border: 1px solid rgba(0,45,255,0.2);
+  }
+  .step-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    color: var(--white);
+    margin-bottom: 16px;
+  }
+  .step-text {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--muted);
+  }
+
+  /* ─── PAQUETES ─── */
+  #paquetes {
+    padding: 140px 60px;
+    background: rgba(0,45,255,0.02);
+  }
+
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    background: rgba(0,45,255,0.08);
+    margin-top: 80px;
+  }
+
+  .pricing-card {
+    background: var(--black);
+    padding: 52px 44px;
+    position: relative;
+    transition: transform 0.3s;
+  }
+  .pricing-card.featured {
+    background: rgba(0,45,255,0.06);
+    border: 1px solid rgba(0,45,255,0.3);
+    margin: -1px;
+    z-index: 2;
+  }
+  .pricing-card:hover { transform: translateY(-4px); }
+
+  .pricing-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--black);
+    background: var(--gold);
+    padding: 4px 12px;
+    display: inline-block;
+    margin-bottom: 32px;
+  }
+  .pricing-badge.empty { background: transparent; color: transparent; }
+
+  .pricing-tier {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+  }
+  .pricing-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 44px;
+    letter-spacing: 2px;
+    color: var(--white);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .pricing-tagline {
+    font-family: 'DM Serif Display', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 40px;
+  }
+  .pricing-price {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 64px;
+    color: var(--white);
+    line-height: 1;
+  }
+  .pricing-price sup {
+    font-size: 24px;
+    vertical-align: top;
+    margin-top: 12px;
+    color: var(--gold);
+  }
+  .pricing-period {
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-top: 4px;
+    margin-bottom: 40px;
+  }
+  .pricing-divider {
+    height: 1px;
+    background: rgba(0,45,255,0.15);
+    margin-bottom: 32px;
+  }
+  .pricing-features {
+    list-style: none;
+    margin-bottom: 48px;
+  }
+  .pricing-features li {
+    font-size: 13px;
+    color: var(--muted);
+    padding: 8px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .pricing-features li::before {
+    content: '→';
+    color: var(--gold);
+    font-size: 12px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .pricing-features li.disabled {
+    opacity: 0.3;
+  }
+  .pricing-features li.disabled::before { content: '—'; color: var(--muted); }
+
+  .btn-pricing {
+    display: block;
+    text-align: center;
+    padding: 16px;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: none;
+    transition: all 0.3s;
+  }
+  .btn-pricing.outline {
+    border: 1px solid rgba(0,45,255,0.3);
+    color: var(--gold);
+  }
+  .btn-pricing.outline:hover { border-color: var(--gold); background: rgba(0,45,255,0.08); }
+  .btn-pricing.solid {
+    background: var(--gold);
+    color: var(--black);
+  }
+  .btn-pricing.solid:hover { background: var(--gold-light); }
+
+  /* ─── PORTFOLIO ─── */
+  #portfolio {
+    padding: 140px 60px;
+  }
+
+  .portfolio-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-rows: 300px 300px;
+    gap: 2px;
+    margin-top: 80px;
+    background: rgba(0,45,255,0.08);
+  }
+
+  .portfolio-item {
+    background: var(--black);
+    position: relative;
+    overflow: hidden;
+    cursor: none;
+  }
+  .portfolio-item:first-child { grid-row: span 2; }
+  .portfolio-bg {
+    position: absolute;
+    inset: 0;
+    transition: transform 0.6s ease;
+  }
+  .portfolio-item:hover .portfolio-bg { transform: scale(1.05); }
+
+  .p1 .portfolio-bg { background: linear-gradient(135deg, #000820, #001466); }
+  .p2 .portfolio-bg { background: linear-gradient(135deg, #001433, #002080); }
+  .p3 .portfolio-bg { background: linear-gradient(135deg, #000C2A, #001A55); }
+  .p4 .portfolio-bg { background: linear-gradient(135deg, #001040, #0020AA); }
+  .p5 .portfolio-bg { background: linear-gradient(135deg, #000D30, #001850); }
+
+  .portfolio-overlay {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 32px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.8));
+    transform: translateY(20px);
+    opacity: 0;
+    transition: transform 0.4s, opacity 0.4s;
+  }
+  .portfolio-item:hover .portfolio-overlay { transform: translateY(0); opacity: 1; }
+  .portfolio-category {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .portfolio-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    color: var(--white);
+  }
+
+  /* Decorative elements inside portfolio items */
+  .p-deco {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    opacity: 0.15;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 80px;
+    color: var(--gold);
+    letter-spacing: 4px;
+  }
+
+  /* ─── CTA FINAL ─── */
+  #contacto {
+    padding: 160px 60px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  #contacto::before {
+    content: 'GRIDCO';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 280px;
+    color: var(--white);
+    opacity: 0.02;
+    white-space: nowrap;
+    pointer-events: none;
+    letter-spacing: 20px;
+  }
+
+  .cta-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 32px;
+  }
+  .cta-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(60px, 9vw, 130px);
+    line-height: 0.95;
+    letter-spacing: -1px;
+    margin-bottom: 40px;
+  }
+  .cta-title .italic { font-family: 'DM Serif Display', serif; color: var(--gold); font-style: italic; }
+
+  .cta-sub {
+    font-size: 15px;
+    color: var(--muted);
+    max-width: 500px;
+    margin: 0 auto 60px;
+    line-height: 1.8;
+  }
+
+  .cta-actions {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  /* ─── FOOTER ─── */
+  footer {
+    border-top: 1px solid rgba(0,45,255,0.15);
+    padding: 48px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 8px;
+    color: var(--gold);
+    opacity: 0.6;
+  }
+  .footer-copy {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--muted);
+  }
+  .footer-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+  .footer-links a {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 0.3s;
+  }
+  .footer-links a:hover { color: var(--gold); }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes expandLine {
+    to { transform: scaleX(1); }
+  }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 1024px) {
+    nav { padding: 24px 32px; }
+    #hero, #manifesto, #servicios, #proceso, #paquetes, #portfolio, #contacto { padding: 100px 32px; }
+    .hero-deco { display: none; }
+    #manifesto { grid-template-columns: 1fr; gap: 60px; }
+    .manifesto-visual { height: 300px; }
+    .services-grid { grid-template-columns: 1fr 1fr; }
+    .process-steps { grid-template-columns: 1fr 1fr; }
+    .pricing-grid { grid-template-columns: 1fr; }
+    .pricing-card.featured { margin: 0; }
+    .portfolio-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
+    .portfolio-item:first-child { grid-row: span 1; }
+    footer { flex-direction: column; gap: 24px; text-align: center; }
+    .nav-links { display: none; }
+  }
+  @media (max-width: 640px) {
+    nav { padding: 20px 24px; }
+    #hero, #manifesto, #servicios, #proceso, #paquetes, #portfolio, #contacto { padding: 80px 24px; }
+    .services-grid { grid-template-columns: 1fr; }
+    .process-steps { grid-template-columns: 1fr; }
+    .portfolio-grid { grid-template-columns: 1fr; }
+    .section-header { flex-direction: column; align-items: flex-start; gap: 20px; }
+    .section-desc { text-align: left; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="bg-grid"></div>
+<div class="noise"></div>
+
+<!-- ─── NAV ─── -->
+<nav>
+  <a href="#" class="nav-logo">GRID<span>CO</span></a>
+  <ul class="nav-links">
+    <li><a href="#servicios">Servicios</a></li>
+    <li><a href="#proceso">Proceso</a></li>
+    <li><a href="#paquetes">Paquetes</a></li>
+    <li><a href="#portfolio">Trabajo</a></li>
+  </ul>
+  <a href="#contacto" class="nav-cta">Empezar</a>
+</nav>
+
+<!-- ─── HERO ─── -->
+<section id="hero">
+  <div>
+    <p class="hero-eyebrow">// Marketing Digital · Contenido · Branding</p>
+    <h1 class="hero-title">
+      TU IDEA<br>
+      <span class="accent">en la</span><br>
+      PANTALLA
+    </h1>
+    <p class="hero-sub">
+      Esa idea que tuviste en una servilleta mientras tomabas café —
+      <strong>la convertimos en contenido digital que vende.</strong>
+      Soluciones tecnológicas de marketing para marcas que piensan diferente.
+    </p>
+    <div class="hero-actions">
+      <a href="#paquetes" class="btn-primary">Ver Paquetes</a>
+      <a href="#servicios" class="btn-ghost">Nuestros Servicios</a>
+    </div>
+  </div>
+
+  <div class="hero-deco">
+    <div class="servilleta">
+      <p class="sketch-label">Idea inicial</p>
+      <div class="sketch-line" style="width:80%"></div>
+      <div class="sketch-line" style="width:60%"></div>
+      <div class="sketch-circle"></div>
+      <div class="sketch-box"></div>
+      <div class="sketch-line" style="width:70%; margin-top:12px"></div>
+      <div class="sketch-line" style="width:45%"></div>
+      <p class="servilleta-tag">→ GRIDCO lo hace realidad</p>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <div class="scroll-line"></div>
+    Scroll
+  </div>
+</section>
+
+<!-- ─── MARQUEE ─── -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span class="marquee-item">Contenido para Redes</span>
+    <span class="marquee-item marquee-dot">◆</span>
+    <span class="marquee-item">Edición de Video</span>
+    <span class="marquee-item marquee-dot">◆</span>
+    <span class="marquee-item">Branding Visual</span>
+    <span class="marquee-item marquee-dot">◆</span>
+    <span class="marquee-item">Copywriting</span>
+    <span class="marquee-item marquee-dot">◆</span>
+    <span class="marquee-item">Estrategia Digital</span>
+    <span class="marquee-item marquee-dot">◆</span>
+    <span class="marquee-item">Campañas de Lanzamiento</span>
+    <span class="marquee-item marquee-dot">◆</span>
+    <span class="marquee-item">Community Management</span>
+    <span class="marquee-item marquee-dot">◆</span>
+    <span class="marquee-item">Contenido para Redes</span>
+    <span class="marquee-item marquee-dot">◆</span>
+    <span class="marquee-item">Edición de Video</span>
+    <span class="marquee-item marquee-dot">◆</span>
+    <span class="marquee-item">Branding Visual</span>
+    <span class="marquee-item marquee-dot">◆</span>
+    <span class="marquee-item">Copywriting</span>
+    <span class="marquee-item marquee-dot">◆</span>
+    <span class="marquee-item">Estrategia Digital</span>
+    <span class="marquee-item marquee-dot">◆</span>
+    <span class="marquee-item">Campañas de Lanzamiento</span>
+    <span class="marquee-item marquee-dot">◆</span>
+    <span class="marquee-item">Community Management</span>
+    <span class="marquee-item marquee-dot">◆</span>
+  </div>
+</div>
+
+<!-- ─── MANIFIESTO ─── -->
+<section id="manifesto">
+  <div>
+    <p class="manifesto-label reveal">Quiénes somos</p>
+    <h2 class="manifesto-title reveal reveal-delay-1">
+      La nueva<br>
+      <strong>SERVILLETA</strong><br>
+      de los creadores
+    </h2>
+    <div class="manifesto-text reveal reveal-delay-2">
+      <p>
+        Existe una generación que creció sin pantallas ni guías. 
+        Una generación que desarrolló la imaginación de la nada — 
+        <em>explicando ideas en servilletas</em>, dibujando con bolígrafo en libretas, 
+        soñando en análogo.
+      </p>
+      <p>
+        Hoy ese mismo talento enfrenta un mundo <em>completamente digital</em>. 
+        Y nosotros somos su puente. En GRIDCO transformamos cada idea — 
+        sin importar cómo llegue — en contenido digital que conecta, 
+        convierte y posiciona.
+      </p>
+      <p>
+        No somos solo una agencia. 
+        Somos tu <em>equipo creativo-tecnológico</em>, 
+        listos para hacer realidad lo que imaginaste en esa servilleta.
+      </p>
+    </div>
+  </div>
+
+  <div class="manifesto-visual reveal">
+    <div class="mani-card">
+      <div class="mani-num">01</div>
+      <div class="mani-stat">360°</div>
+      <div class="mani-stat-label">Soluciones de contenido</div>
+    </div>
+    <div class="mani-card">
+      <div class="mani-icon">🎬</div>
+      <div class="mani-stat" style="font-size:36px">Redes +<br>Video</div>
+      <div class="mani-card-text" style="margin-top:12px">Presencia digital completa para tu marca en todos los formatos</div>
+    </div>
+    <div class="mani-card">
+      <div class="mani-stat" style="font-size:28px; color: var(--gold)">IDEAS<br>→<br>PIXELS</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── SERVICIOS ─── -->
+<section id="servicios">
+  <div class="section-header reveal">
+    <h2 class="section-title">
+      NUESTROS<br>
+      <span class="line2">SERVICIOS</span>
+    </h2>
+    <p class="section-desc">
+      Un ecosistema completo de soluciones creativas y tecnológicas para llevar tu marca al siguiente nivel.
+    </p>
+  </div>
+
+  <div class="services-grid">
+    <div class="service-card reveal">
+      <div class="service-num">01 —</div>
+      <div class="service-icon">📱</div>
+      <h3 class="service-name">Contenido para Redes Sociales</h3>
+      <p class="service-desc">Posts, carruseles, stories e historias diseñados para capturar atención y generar engagement real en cada plataforma.</p>
+      <div class="service-tags">
+        <span class="tag">Instagram</span>
+        <span class="tag">Facebook</span>
+        <span class="tag">LinkedIn</span>
+        <span class="tag">Carruseles</span>
+      </div>
+    </div>
+
+    <div class="service-card reveal reveal-delay-1">
+      <div class="service-num">02 —</div>
+      <div class="service-icon">🎬</div>
+      <h3 class="service-name">Edición de Video</h3>
+      <p class="service-desc">Reels, Shorts y TikToks que paran el scroll. Videos promocionales con subtítulos animados y optimización para cada red.</p>
+      <div class="service-tags">
+        <span class="tag">Reels</span>
+        <span class="tag">TikTok</span>
+        <span class="tag">YouTube</span>
+        <span class="tag">Shorts</span>
+      </div>
+    </div>
+
+    <div class="service-card reveal reveal-delay-2">
+      <div class="service-num">03 —</div>
+      <div class="service-icon">✍️</div>
+      <h3 class="service-name">Copywriting</h3>
+      <p class="service-desc">Textos que convierten: posts, CTAs, descripciones de reels y mensajes que hacen que tu audiencia actúe.</p>
+      <div class="service-tags">
+        <span class="tag">Posts</span>
+        <span class="tag">CTAs</span>
+        <span class="tag">Captions</span>
+      </div>
+    </div>
+
+    <div class="service-card reveal">
+      <div class="service-num">04 —</div>
+      <div class="service-icon">🎨</div>
+      <h3 class="service-name">Branding Visual</h3>
+      <p class="service-desc">Paleta de colores, tipografías y estilo visual cohesivo. Plantillas editables en Canva y optimización de perfil completa.</p>
+      <div class="service-tags">
+        <span class="tag">Paleta</span>
+        <span class="tag">Templates</span>
+        <span class="tag">Identidad</span>
+      </div>
+    </div>
+
+    <div class="service-card reveal reveal-delay-1">
+      <div class="service-num">05 —</div>
+      <div class="service-icon">📅</div>
+      <h3 class="service-name">Estrategia & Calendario</h3>
+      <p class="service-desc">Calendario de contenido mensual con estrategia definida. Community management y optimización de perfil de Instagram.</p>
+      <div class="service-tags">
+        <span class="tag">Estrategia</span>
+        <span class="tag">Calendario</span>
+        <span class="tag">Community</span>
+      </div>
+    </div>
+
+    <div class="service-card reveal reveal-delay-2" style="background: rgba(0,45,255,0.04); border-left: 2px solid var(--gold);">
+      <div class="service-num" style="color:var(--rust); opacity:1">PREMIUM —</div>
+      <div class="service-icon">🚀</div>
+      <h3 class="service-name">Campañas de Lanzamiento</h3>
+      <p class="service-desc">Producción completa para lanzamientos y promos. Paquetes para marcas personales y empresas que quieren dominar su mercado.</p>
+      <div class="service-tags">
+        <span class="tag" style="border-color: var(--rust); color: var(--rust);">Lanzamientos</span>
+        <span class="tag" style="border-color: var(--rust); color: var(--rust);">Campañas</span>
+        <span class="tag" style="border-color: var(--rust); color: var(--rust);">Premium</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── PROCESO ─── -->
+<section id="proceso">
+  <div class="section-header reveal">
+    <h2 class="section-title">
+      CÓMO<br>
+      <span class="line2">TRABAJAMOS</span>
+    </h2>
+    <p class="section-desc">
+      De la idea al pixel en cuatro pasos simples. Sin complicaciones, sin burocracia.
+    </p>
+  </div>
+
+  <div class="process-steps">
+    <div class="step reveal">
+      <div class="step-num">01</div>
+      <h3 class="step-title">Cuéntanos tu idea</h3>
+      <p class="step-text">Como si nos contaras en una servilleta. Sin tecnicismos. Queremos entender tu visión, tu marca y a quién quieres llegar.</p>
+    </div>
+    <div class="step reveal reveal-delay-1">
+      <div class="step-num">02</div>
+      <h3 class="step-title">Estrategia & Propuesta</h3>
+      <p class="step-text">Convertimos esa visión en un plan de contenido estructurado: qué crear, en qué formatos, con qué frecuencia y con qué voz.</p>
+    </div>
+    <div class="step reveal reveal-delay-2">
+      <div class="step-num">03</div>
+      <h3 class="step-title">Producción Creativa</h3>
+      <p class="step-text">Nuestro equipo diseña, edita y redacta todo el contenido. Revisiones incluidas hasta que quede perfecto para tu marca.</p>
+    </div>
+    <div class="step reveal reveal-delay-3">
+      <div class="step-num">04</div>
+      <h3 class="step-title">Entrega & Optimización</h3>
+      <p class="step-text">Entregamos en los formatos correctos, listos para publicar. Medimos resultados y optimizamos mes a mes.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─── PAQUETES ─── -->
+<section id="paquetes">
+  <div class="section-header reveal">
+    <h2 class="section-title">
+      ELIGE TU<br>
+      <span class="line2">PAQUETE</span>
+    </h2>
+    <p class="section-desc">
+      Planes diseñados para cada etapa de tu marca. Transparentes, sin letra pequeña.
+    </p>
+  </div>
+
+  <div class="pricing-grid">
+    <!-- Starter -->
+    <div class="pricing-card reveal">
+      <div class="pricing-badge empty">—</div>
+      <div class="pricing-tier">Starter</div>
+      <div class="pricing-name">ESENCIAL</div>
+      <div class="pricing-tagline">Para marcas que están comenzando</div>
+      <div class="pricing-price"><sup>$</sup>299</div>
+      <div class="pricing-period">/ mes</div>
+      <div class="pricing-divider"></div>
+      <ul class="pricing-features">
+        <li>12 posts diseñados/mes (feed)</li>
+        <li>8 stories diseñadas/mes</li>
+        <li>Textos y CTAs para cada post</li>
+        <li>1 formato de red social</li>
+        <li>Optimización de perfil de Instagram</li>
+        <li class="disabled">Edición de video / Reels</li>
+        <li class="disabled">Calendario de contenido</li>
+        <li class="disabled">Estrategia mensual</li>
+      </ul>
+      <a href="#contacto" class="btn-pricing outline">Empezar</a>
+    </div>
+
+    <!-- Pro -->
+    <div class="pricing-card featured reveal reveal-delay-1">
+      <div class="pricing-badge">Más Popular</div>
+      <div class="pricing-tier">Professional</div>
+      <div class="pricing-name">CREATOR</div>
+      <div class="pricing-tagline">Para marcas que quieren crecer</div>
+      <div class="pricing-price"><sup>$</sup>699</div>
+      <div class="pricing-period">/ mes</div>
+      <div class="pricing-divider"></div>
+      <ul class="pricing-features">
+        <li>20 posts diseñados/mes</li>
+        <li>16 stories + portadas de reels</li>
+        <li>Copywriting completo</li>
+        <li>3 redes sociales</li>
+        <li>4 reels/videos editados/mes</li>
+        <li>Calendario de contenido mensual</li>
+        <li>Branding visual básico</li>
+        <li class="disabled">Estrategia premium + campañas</li>
+      </ul>
+      <a href="#contacto" class="btn-pricing solid">Empezar</a>
+    </div>
+
+    <!-- Premium -->
+    <div class="pricing-card reveal reveal-delay-2">
+      <div class="pricing-badge empty">—</div>
+      <div class="pricing-tier">Premium</div>
+      <div class="pricing-name">BRAND</div>
+      <div class="pricing-tagline">Para marcas que dominan su mercado</div>
+      <div class="pricing-price"><sup>$</sup>1,499</div>
+      <div class="pricing-period">/ mes</div>
+      <div class="pricing-divider"></div>
+      <ul class="pricing-features">
+        <li>Contenido ilimitado (todas las redes)</li>
+        <li>Edición avanzada de video (10+/mes)</li>
+        <li>Estrategia de contenido mensual</li>
+        <li>Campañas de lanzamiento</li>
+        <li>Community management básico</li>
+        <li>Branding visual completo</li>
+        <li>Plantillas editables (Canva)</li>
+        <li>Reunión estratégica quincenal</li>
+      </ul>
+      <a href="#contacto" class="btn-pricing outline">Empezar</a>
+    </div>
+  </div>
+</section>
+
+<!-- ─── PORTFOLIO / MUESTRA ─── -->
+<section id="portfolio">
+  <div class="section-header reveal">
+    <h2 class="section-title">
+      NUESTRO<br>
+      <span class="line2">TRABAJO</span>
+    </h2>
+    <p class="section-desc">
+      Cada proyecto es una idea convertida en contenido que conecta con audiencias reales.
+    </p>
+  </div>
+
+  <div class="portfolio-grid reveal">
+    <div class="portfolio-item p1">
+      <div class="portfolio-bg"></div>
+      <div class="p-deco">BRAND</div>
+      <div class="portfolio-overlay">
+        <div class="portfolio-category">Branding + Redes</div>
+        <div class="portfolio-title">Identidad Visual Completa</div>
+      </div>
+    </div>
+    <div class="portfolio-item p2">
+      <div class="portfolio-bg"></div>
+      <div class="p-deco">▶</div>
+      <div class="portfolio-overlay">
+        <div class="portfolio-category">Video Production</div>
+        <div class="portfolio-title">Reels que convierten</div>
+      </div>
+    </div>
+    <div class="portfolio-item p3">
+      <div class="portfolio-bg"></div>
+      <div class="p-deco">✦</div>
+      <div class="portfolio-overlay">
+        <div class="portfolio-category">Contenido Feed</div>
+        <div class="portfolio-title">Posts de alto impacto</div>
+      </div>
+    </div>
+    <div class="portfolio-item p4">
+      <div class="portfolio-bg"></div>
+      <div class="p-deco">→</div>
+      <div class="portfolio-overlay">
+        <div class="portfolio-category">Campaña de Lanzamiento</div>
+        <div class="portfolio-title">Lanzamiento de producto</div>
+      </div>
+    </div>
+    <div class="portfolio-item p5">
+      <div class="portfolio-bg"></div>
+      <div class="p-deco">📅</div>
+      <div class="portfolio-overlay">
+        <div class="portfolio-category">Estrategia</div>
+        <div class="portfolio-title">Calendario mensual</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CONTACTO / CTA ─── -->
+<section id="contacto">
+  <p class="cta-label reveal">// Empecemos</p>
+  <h2 class="cta-title reveal">
+    ¿LISTA TU<br>
+    <span class="italic">idea?</span>
+  </h2>
+  <p class="cta-sub reveal">
+    Cuéntanos en qué estás trabajando — aunque sea en una servilleta. 
+    Nosotros lo convertimos en contenido digital que hace crecer tu marca.
+  </p>
+  <div class="cta-actions reveal">
+    <a href="mailto:hola@gridco.co" class="btn-primary">hola@gridco.co</a>
+    <a href="https://wa.me/+57" class="btn-ghost">WhatsApp</a>
+  </div>
+</section>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <div class="footer-logo">GRIDCO</div>
+  <ul class="footer-links">
+    <li><a href="#servicios">Servicios</a></li>
+    <li><a href="#paquetes">Paquetes</a></li>
+    <li><a href="#contacto">Contacto</a></li>
+  </ul>
+  <p class="footer-copy">© 2025 GRIDCO — Todos los derechos reservados</p>
+</footer>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mouseX = 0, mouseY = 0;
+  let ringX = 0, ringY = 0;
+
+  document.addEventListener('mousemove', e => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    cursor.style.left = mouseX + 'px';
+    cursor.style.top = mouseY + 'px';
+  });
+
+  function animateRing() {
+    ringX += (mouseX - ringX) * 0.1;
+    ringY += (mouseY - ringY) * 0.1;
+    ring.style.left = ringX + 'px';
+    ring.style.top = ringY + 'px';
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => { cursor.classList.add('hover'); ring.classList.add('hover'); });
+    el.addEventListener('mouseleave', () => { cursor.classList.remove('hover'); ring.classList.remove('hover'); });
+  });
+
+  // Reveal on scroll
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => observer.observe(el));
+
+  // Smooth scroll
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
+    });
+  });
+
+  // Nav blur on scroll
+  const nav = document.querySelector('nav');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 60) {
+      nav.style.background = 'rgba(8,8,8,0.95)';
+      nav.style.backdropFilter = 'blur(20px)';
+    } else {
+      nav.style.background = 'transparent';
+      nav.style.backdropFilter = 'none';
+    }
+  });
+</script>
+</body>
+</html>
